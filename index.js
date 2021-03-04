@@ -12,7 +12,7 @@ app.get('/', (req, res) => res.send('I\'m alive, I promise'));
 
 app.listen(port, () => console.log(`listening at http://localhost:${port}`));
 
-const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
+const client = new Discord.Client();
 
 client.on('message', (msg) => {
   if (msg.content.startsWith('/countdown')) {
@@ -44,6 +44,7 @@ function countdown(baseMessage, msg, countdownTime) {
   newTime = new Date(countdownTime.getTime())
   if (newTime - Date.now() < 0) {
     msg.edit(baseMessage + ' Timer Ended!')
+    delete countdown[msg.id]
   } else {
     remainingTime = timeDistance(time, Date.now())
     msg.edit(baseMessage + ' ' + remainingTime).then(() => {
