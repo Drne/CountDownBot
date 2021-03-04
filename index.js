@@ -16,14 +16,13 @@ const client = new Discord.Client();
 
 client.on('message', (msg) => {
   if (msg.content.startsWith('/countdown')) {
-    countdownTime = 'countdown in'
-    time = msg.content.slice(10)
-    time = chrono.parseDate(time + 'from now', new Date())
-    timeDist = timeDistance(time, Date.now())
+    const countdownTime = 'countdown in'
+    let incomingTimeStr = msg.content.slice(10)
+    let parsedIncomingTime = chrono.parseDate(incomingTimeStr + 'from now', new Date())
     msg.reply('Starting Countdown! ').then((replyMessage) => {
       msg.delete()
       baseMessage = '<@' + msg.author.id + '>'
-      countdown(baseMessage, replyMessage, new Date(time.getTime()))
+      countdown(baseMessage, replyMessage, new Date(parsedIncomingTime.getTime()))
     })
   }
 })
@@ -41,14 +40,15 @@ const timeDistance = (date1, date2) => {
 };
 
 function countdown(baseMessage, msg, countdownTime) {
-  newTime = new Date(countdownTime.getTime())
+  const newTime = new Date(countdownTime.getTime())
   if (newTime - Date.now() < 0) {
     msg.edit(baseMessage + ' Timer Ended!')
-    delete countdown[msg.id]
+    delete countdowns[msg.id]
   } else {
-    remainingTime = timeDistance(time, Date.now())
+    remainingTime = timeDistance(newTime, Date.now())
+    // console.log(remainingTime)
     msg.edit(baseMessage + ' ' + remainingTime).then(() => {
-      countdowns[msg.id] = setTimeout(countdown, 1000, baseMessage, msg, newTime)
+      setTimeout(countdown, 1000, baseMessage, msg, newTime)
     })
   }
 }
